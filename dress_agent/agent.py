@@ -1,14 +1,24 @@
-from google.adk.agents import Agent
+from google.adk.agents import SequentialAgent
+from .sub_agents import (
+    trend_researcher,
+    dress_analyzer,
+    design_creator,
+    image_generator,
+    seamstress_guide,
+)
 
-root_agent = Agent(
-    name="dress_agent",
-    model="gemini-2.5-flash",
-    description="A fashion redesign assistant that analyzes dresses and suggests new designs",
-    instruction="""
-    You are a professional fashion designer assistant.
-
-    Your job is to help users redesign their dresses.
-    For now, ask the user to describe their dress and their style preferences,
-    and suggest a redesign concept.
-    """,
+root_agent = SequentialAgent(
+    name="DressRedesignPipeline",
+    description=(
+        "A complete dress redesign pipeline: researches current trends, "
+        "analyzes your dress, creates a new design concept, generates a visual sketch, "
+        "and provides detailed seamstress instructions."
+    ),
+    sub_agents=[
+        trend_researcher,
+        dress_analyzer,
+        design_creator,
+        image_generator,
+        seamstress_guide,
+    ],
 )
