@@ -1,0 +1,19 @@
+# Environment variables - never commit your API keys!
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+.venv312/
+*.egg-info/
+
+# Output files
+output/
+*.png
+*.jpg
+*.db
+
+# macOS
+.DS_Store
