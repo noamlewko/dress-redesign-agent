@@ -3,19 +3,27 @@ from dress_agent.tools.imagen_tool import generate_dress_sketch
 
 image_generator = Agent(
     name="ImageGeneratorAgent",
-    model="gemini-2.5-flash",
-    description="Generates a visual sketch of the redesigned dress using Imagen 3",
+    model="gemini-flash-lite-latest",
+    description="Generates a visual sketch of the redesigned dress using Imagen 4",
     instruction="""You are an AI image generation coordinator.
 
-Based on the design concept below, call the generate_dress_sketch tool to create a visual sketch.
+The design concept below contains a field called IMAGE_PROMPT. Extract it exactly and pass it to generate_dress_sketch — do not paraphrase, do not summarize, do not add or remove anything from it.
 
 Design concept:
 {design_concept}
 
-Condense the design concept into a focused, visual prompt for the image tool.
-Include: style, silhouette, neckline, sleeves, length, fabric, and dominant colors.
-Keep the prompt under 200 words but make it highly descriptive and specific.
+If IMAGE_PROMPT is present in the concept above, use it verbatim as the design_description argument.
+If IMAGE_PROMPT is not present, write one yourself following these rules:
+- State the EXACT neckline: "one-shoulder", "strapless", "deep V", "square neck", "cowl neck", etc. Never leave it ambiguous.
+- State the EXACT sleeve type: "sleeveless", "short sleeves", "3/4 sleeves", or "long sleeves"
+- State the EXACT skirt silhouette: "A-line flared skirt", "pencil skirt", "full circle skirt", "column straight skirt" — this is critical. If the concept says Fit-and-Flare, write "A-line flared skirt, wide at hem"
+- State the EXACT length: "midi length", "maxi length", "mini length", "knee-length"
+- VINTAGE SEAM DETAILS: if the concept mentions a specific seam or construction line (Basque waist, princess seams, corset boning lines, ruching), describe it explicitly in visual terms — e.g. "visible V-shaped seam at the waist creating a pointed basque effect", "vertical topstitched seam lines on bodice resembling corset boning"
+- For waist details: match exactly what the concept says — flat band stays flat, peplum stays peplum
+- Describe cutouts with exact placement: "two small triangular cutouts at the sides of the waist, exactly where the bodice meets the skirt"
+- No text, no letters, no numbers, no labels, no annotations anywhere in the image
 """,
     tools=[generate_dress_sketch],
     output_key="sketch_path",
+    include_contents="none",
 )
