@@ -1,0 +1,249 @@
+import asyncio
+import base64
+import os
+import uuid
+from datetime import datetime
+from pathlib import Path
+
+# Load .env before importing ADK
+def _load_env():
+    env_path = Path(__file__).parent / ".env"
+    if env_path.exists():
+        with open(env_path) as f:
+            for line in f:
+                line = line.strip()
+                if line and not line.startswith("#") and "=" in line:
+                    key, val = line.split("=", 1)
+                    os.environ.setdefault(key.strip(), val.strip())
+
+_load_env()
+
+import streamlit as st
+from google.adk.runners import Runner
+from google.adk.sessions import InMemorySessionService
+from google.genai import types
+
+from dress_agent.agent import root_agent
+
+# ── Page config ─────────────────────────────────────────────────────────────
+st.set_page_config(page_title="עיצוב שמלה מחדש", page_icon="👗", layout="centered")
+
+st.markdown("""
+<style>
+    html, body, [class*="st-"] { direction: rtl; text-align: right; }
+    .stButton button { width: 100%; font-size: 1.1rem; padding: 0.6rem; }
+</style>
+""", unsafe_allow_html=True)
+
+# ── Agent labels for progress display ───────────────────────────────────────
+AGENT_STEPS = [
+    ("TrendResearchAgent",  "🔍 מחפש טרנדי אופנה עדכניים..."),
+    ("DressAnalyzerAgent",  "🔬 מנתח את השמלה..."),
+    ("DesignCreatorAgent",  "✏️  יוצר קונספט עיצוב חדש..."),
+    ("ImageGeneratorAgent", "🎨 מייצר סקיצה עם Imagen 4..."),
+    ("SeamstressGuideAgent","🧵 כותב מדריך לתופרת..."),
+]
+AGENT_NAMES = [name for name, _ in AGENT_STEPS]
+
+# ── UI ───────────────────────────────────────────────────────────────────────
+st.title("👗 עיצוב שמלה מחדש")
+st.markdown("העלי תמונה של השמלה, מלאי את הטופס — ה-AI יעצב עבורך שמלה חדשה")
+st.divider()
+
+# Image upload
+uploaded_file = st.file_uploader(
+    "📸 תמונה של השמלה",
+    type=["jpg", "jpeg", "png", "webp"],
+    help="תמונה שלך לובשת את השמלה, מישהי אחרת לובשת אותה, או השמלה מונחת",
+)
+if uploaded_file:
+    st.image(uploaded_file, width=280)
+
+st.divider()
+st.subheader("הטופס")
+
+col1, col2 = st.columns(2)
+
+with col1:
+    style = st.selectbox("סגנון", ["וינטג׳", "מודרני", "קלאסי", "בוהמי", "מינימליסטי", "גלאם"])
+    occasion = st.selectbox("אירוע", ["יומיומי", "עבודה", "ערב", "חתונה"])
+    length = st.selectbox("אורך רצוי", ["מידי", "מיני", "ברך", "מקסי"])
+
+with col2:
+    age = st.number_input("גיל", min_value=16, max_value=80, value=28, step=1)
+    change_level = st.radio(
+        "רמת שינוי",
+        ["קל — שמרי על הבסיס", "בינוני", "קיצוני — השראה בלבד"],
+    )
+
+color_choice = st.radio("צבע", ["שמרי את הצבע המקורי", "שני את הצבע"])
+color_input = ""
+if color_choice == "שני את הצבע":
+    color_input = st.text_input("לאיזה צבע?", placeholder="לבן, אדום בורדו, שחור...")
+
+st.divider()
+
+ready = bool(uploaded_file)
+run_btn = st.button("✨ עצבי מחדש", type="primary", disabled=not ready)
+
+if not ready:
+    st.caption("העלי תמונה כדי להפעיל")
+
+# ── Pipeline ─────────────────────────────────────────────────────────────────
+if run_btn and uploaded_file:
+    # Build form text
+    color_line = "שמרי את הצבע המקורי" if color_choice == "שמרי את הצבע המקורי" else f"שני צבע ל: {color_input or 'לא צוין'}"
+    change_label = change_level.split(" — ")[0]
+
+    form_text = (
+        f"Style: {style}\n"
+        f"Change level: {change_label}\n"
+        f"Age: {age}\n"
+        f"Length: {length}\n"
+        f"Occasion: {occasion}\n"
+        f"Color: {color_line}"
+    )
+
+    image_bytes = uploaded_file.read()
+    mime_type = uploaded_file.type or "image/jpeg"
+
+    # Pass image directly in new_message so DressAnalyzerAgent sees it natively
+    new_message = types.Content(
+        role="user",
+        parts=[
+            types.Part(inline_data=types.Blob(mime_type=mime_type, data=image_bytes)),
+            types.Part(text=form_text),
+        ],
+    )
+
+    # Delete old sketch so we never show a stale image
+    old_sketch = Path("output/new_design.png")
+    if old_sketch.exists():
+        old_sketch.unlink()
+
+    image_b64 = base64.b64encode(image_bytes).decode("utf-8")
+
+    session_service = InMemorySessionService()
+    session = asyncio.run(session_service.create_session(
+        app_name="dress_agent",
+        user_id="user",
+        session_id=str(uuid.uuid4()),
+    ))
+    runner = Runner(
+        agent=root_agent,
+        session_service=session_service,
+        app_name="dress_agent",
+    )
+
+    # Progress display — all start as ⏳ (running)
+    st.divider()
+    st.subheader("מעבד...")
+
+    progress_slots = {}
+    for name, label in AGENT_STEPS:
+        progress_slots[name] = st.empty()
+        progress_slots[name].markdown(f"⏳ {label}")
+
+    status_text = st.empty()
+
+    import time
+
+    state_delta = {
+        "uploaded_image_bytes": image_b64,
+        "uploaded_image_mime": mime_type,
+        "user_preferences": form_text,
+        "dress_analysis": "",
+        "trend_insights": "",
+        "design_concept": "",
+        "sketch_path": "",
+        "seamstress_guide": "",
+        "current_date": datetime.now().strftime("%B %Y"),
+        "current_year": str(datetime.now().year),
+    }
+
+    pipeline_ok = False
+    last_error = ""
+    for attempt in range(3):
+        if attempt > 0:
+            status_text.markdown(f"**השרת עמוס, מנסה שוב ({attempt + 1}/3)...**")
+            time.sleep(15)
+            # Fresh session for each retry so pipeline starts clean
+            session = asyncio.run(session_service.create_session(
+                app_name="dress_agent",
+                user_id="user",
+                session_id=str(uuid.uuid4()),
+            ))
+
+        try:
+            completed = set()
+            for event in runner.run(
+                user_id="user",
+                session_id=session.id,
+                new_message=new_message,
+                state_delta=state_delta,
+            ):
+                if getattr(event, "error_message", None):
+                    st.error(f"שגיאה ב-{event.author}: {event.error_message}")
+                    break
+
+                author = event.author or ""
+
+                if getattr(event, "turn_complete", False) and author in progress_slots:
+                    if author not in completed:
+                        completed.add(author)
+                        _, label = next((x for x in AGENT_STEPS if x[0] == author), (None, ""))
+                        progress_slots[author].markdown(f"✅ {label.split('...')[0]}")
+
+                        names = [n for n, _ in AGENT_STEPS]
+                        idx = names.index(author) if author in names else -1
+                        if idx >= 0 and idx + 1 < len(names):
+                            _, next_label = AGENT_STEPS[idx + 1]
+                            status_text.markdown(f"**עכשיו:** {next_label}")
+
+            pipeline_ok = True
+            break
+
+        except Exception as e:
+            last_error = str(e)
+            if "503" not in last_error and "UNAVAILABLE" not in last_error:
+                break  # non-retryable error
+
+    if not pipeline_ok:
+        if "503" in last_error or "UNAVAILABLE" in last_error:
+            st.error("השרת של Gemini עמוס כרגע. נסי שוב בעוד כמה דקות.")
+        else:
+            st.error(f"שגיאה: {last_error}")
+
+    if pipeline_ok:
+        for name, label in AGENT_STEPS:
+            progress_slots[name].markdown(f"✅ {label.split('...')[0]}")
+        status_text.empty()
+
+    # Read results from session state
+    final_session = asyncio.run(session_service.get_session(
+        app_name="dress_agent", user_id="user", session_id=session.id
+    ))
+    state = getattr(final_session, "state", {}) if final_session else {}
+
+    # ── Results ──────────────────────────────────────────────────────────────
+    st.divider()
+    st.subheader("התוצאות")
+
+    # Generated sketch
+    sketch_path = Path("output/new_design.png")
+    if sketch_path.exists():
+        st.image(str(sketch_path), caption="הסקיצה החדשה שלך", width=400)
+        with open(sketch_path, "rb") as f:
+            st.download_button("📥 הורידי את הסקיצה", f, file_name="new_design.png", mime="image/png")
+        st.divider()
+
+    tabs = st.tabs(["🔍 טרנדים", "🔬 ניתוח השמלה", "✏️ קונספט עיצוב", "🧵 מדריך לתופרת"])
+
+    with tabs[0]:
+        st.markdown(state.get("trend_insights", "—"))
+    with tabs[1]:
+        st.markdown(state.get("dress_analysis", "—"))
+    with tabs[2]:
+        st.markdown(state.get("design_concept", "—"))
+    with tabs[3]:
+        st.markdown(state.get("seamstress_guide", "—"))
