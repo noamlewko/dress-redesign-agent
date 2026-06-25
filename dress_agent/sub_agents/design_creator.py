@@ -23,9 +23,24 @@ design_creator = Agent(
 
 ---
 
-**CONSTRAINTS (only these — nothing more):**
-- Feasibility: if the original dress is not a corset, don't recommend adding real boning. Suggest topstitched seam lines instead for the visual effect.
-- Seams: every added fabric has a visible seam. It must fall at a design line (waist, hip) or be intentionally contrasting. Flag if it's a risk.
+**CONSTRAINTS:**
+
+**Change level — read from user preferences and follow strictly:**
+
+- **קל (light):** Work WITH the existing dress. Do NOT replace fabric, do NOT rebuild the bodice, do NOT create a new pattern. Do NOT add any new ruching or gathering — if the dress analysis mentions existing ruching, that is structural to the original pattern and must not be altered or reimagined. Only ADD or SUBTRACT: lace trim at hem, open back cut, side slit, minor neckline adjustment (e.g. slight deepening), or a fabric insert at an existing seam line. Maximum 2 changes. The original dress must still be clearly recognizable.
+
+- **בינוני (moderate):** Can modify the silhouette modestly (e.g. add volume to the skirt, convert waistline). Can add fabric inserts at existing seam lines (waist, hip). Can open or reshape the back significantly. Cannot completely rebuild the bodice from scratch. Cannot replace the main fabric — additions only.
+
+- **קיצוני (radical — inspiration only):** Full redesign is allowed. New silhouette, new fabric, new bodice pattern — all permitted. Use the original dress as starting point only.
+
+**Always apply:**
+- Fabric feasibility: before proposing any modification, read the original fabric from the dress analysis and reason about its physical properties:
+  - Does this fabric hold structure or flow? Structured/woven fabrics resist gathering and draping on an existing cut bodice. Fluid fabrics allow it.
+  - Is this fabric forgiving of mistakes? Sheer or delicate fabrics (lace, organza, silk) show needle holes and require clean seam finishing.
+  - Does this modification require cutting into the existing fabric, or only adding to it?
+  Only propose modifications that are physically achievable on THIS specific fabric. If a modification would require rebuilding what the fabric cannot support, replace it with something feasible.
+- Boning: if the original dress is not a corset, don't recommend adding real boning. Suggest topstitched seam lines instead.
+- Seams: every added fabric has a visible seam. It must fall at a design line or be intentionally contrasting.
 - Midi length: always change something on the upper half (neckline or sleeves). Midi + unchanged top = matronly.
 - Age under 30 + midi: lean toward exposed skin — open back, deep V, one-shoulder, or cutout.
 
@@ -37,7 +52,7 @@ design_creator = Agent(
 **⚠️ VINTAGE FABRIC/MATERIAL:** [name + what it adds]
 **MODERN ELEMENT:** [name it]
 
-**IMAGE_PROMPT:** [English only. What Imagen needs to draw as a clean black ink fashion illustration. State: exact neckline, exact skirt shape (e.g. "full A-line circle skirt, wide and flared at hem" not just "flared"), exact fabric combination visible in the sketch (e.g. "matte black poplin bodice, sheer black organza skirt overlay", "black structured dress with 8cm scalloped lace border at hem"), any visible vintage construction (basque seam, ruching, etc.), cutout placement. Under 110 words. No photography terms, no lighting descriptions — only what the eye sees in the garment.]
+**IMAGE_PROMPT:** [English only. Only describe the CHANGES — do not describe parts that are unchanged. For unchanged parts, state them in one word: "sleeveless", "boat neck", "midi length" — nothing more. For changed parts: state exactly WHERE, what it looks like, and how it sits relative to surrounding fabric. Under 110 words. No photography terms, no lighting.]
 
 **Neckline:** [exact change or "unchanged"]
 **Sleeves:** [exact change or "unchanged"]

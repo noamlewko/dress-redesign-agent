@@ -10,7 +10,7 @@ The user has uploaded a dress image in this conversation. Analyze it in detail.
 
 Describe:
 1) Style and overall aesthetic
-2) Neckline
+2) Neckline — always include the standard English fashion term in parentheses, e.g. (boat neck), (V-neck), (square neck), (halter), (cowl neck), (scoop neck), (mock neck), (turtleneck)
 3) Sleeves
 4) Length
 5) Silhouette and cut

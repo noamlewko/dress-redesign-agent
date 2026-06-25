@@ -18,12 +18,13 @@ def generate_dress_sketch(design_description: str, tool_context: ToolContext) ->
     client = genai.Client()
 
     prompt = (
-        f"Two fashion illustrations of the same dress on a plain white background: "
-        f"the left illustration shows the dress from the front, the right illustration shows the dress from the back. "
-        f"Clean black ink line drawing. "
+        f"Two fashion design sketches of the same dress side by side on a plain white background. "
+        f"Left sketch: front view. Right sketch: back view. "
+        f"Style: professional fashion illustration with fabric areas filled in their actual colors — dark fabrics drawn as solid dark shapes, not as outlines only. "
+        f"Clean sketch lines, minimal shading, flat color fills. "
         f"Absolutely no text, no letters, no numbers, no words, no labels, no annotations anywhere in the image. "
         f"No logos, no watermarks, no brand names, no callouts, no dimension lines. "
-        f"Pure illustration only: {design_description}"
+        f"Dress description: {design_description}"
     )
 
     response = client.models.generate_images(
