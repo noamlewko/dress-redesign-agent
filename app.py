@@ -76,6 +76,17 @@ with col2:
         ["קל — שמרי על הבסיס", "בינוני", "קיצוני — השראה בלבד"],
     )
 
+exposure = st.radio(
+    "חשיפת עור",
+    ["מינימלי — מכוסה ואלגנטי", "בינוני — קצת חשיפה", "נועז — אני אוהבת חשוף"],
+    horizontal=True,
+)
+
+zipper_location = st.selectbox(
+    "מיקום רוכסן",
+    ["לא יודעת", "גב — מלמעלה למטה", "צד שמאל / ימין", "אין רוכסן"],
+)
+
 color_choice = st.radio("צבע", ["שמרי את הצבע המקורי", "שני את הצבע"])
 color_input = ""
 if color_choice == "שני את הצבע":
@@ -101,6 +112,8 @@ if run_btn and uploaded_file:
         f"Age: {age}\n"
         f"Length: {length}\n"
         f"Occasion: {occasion}\n"
+        f"Skin exposure preference: {exposure}\n"
+        f"Zipper location: {zipper_location}\n"
         f"Color: {color_line}"
     )
 

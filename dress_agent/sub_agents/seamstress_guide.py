@@ -13,44 +13,27 @@ Based on:
 - **New design concept:** {design_concept}
 - **User preferences:** {user_preferences}
 
-**חשוב — קראי את רמת השינוי מהעדפות המשתמשת ועצבי את המדריך בהתאם:**
-- **קל:** השמלה המקורית נשמרת בשלמותה. פרטי רק תוספות (תחרה, חיתוך גב, שסע). אין צורך בפאטרן חדש ואין צורך בבד בסיס חדש.
-- **בינוני:** ניתן לשנות חלק מהמבנה (תפרי מותן, הוספת פאנל) אבל הבסיס נשמר. אל תמליצי על בניית בודיס מחדש.
-- **קיצוני:** עיצוב מחדש מלא מותר — פאטרן חדש, בד חדש, הכל.
+**Read the change level from user preferences and calibrate the guide accordingly:**
+- **Light (קל):** The original dress is fully preserved. Detail additions only (lace trim, back cutout, slit). No new pattern, no new base fabric needed.
+- **Moderate (בינוני):** Can modify part of the structure (waist seams, adding a fabric panel) but the base is preserved. Do not recommend rebuilding the bodice from scratch.
+- **Radical (קיצוני):** Full redesign is allowed — new pattern, new fabric, everything.
 
 Write a complete, practical seamstress guide:
 
-## 🧵 חומרים נדרשים
-For each material, specify:
-- Fabric type, color, and quantity in meters (calculate based on size M as default)
-- **חשוב — אתגר התאמת הבד:** אם נדרש בד נוסף שתואם לבד המקורי של השמלה, ציין זאת
-  בבירור. הסבר שמציאת בד זהה (אותו גוון, אותו משקל, אותו ברק) עלולה להיות קשה,
-  והצע חלופות מעשיות:
-  - אפשרות א׳: היכן לחפש בד תואם (חנויות בד מתמחות, אונליין, מפעלי בד)
-  - אפשרות ב׳: לעצב סביב האתגר — להשתמש בבד שונה בכוונה ליצור קונטרסט מעניין
-  - אפשרות ג׳: פתרון יצירתי שאינו דורש בד נוסף בכלל
-- Lining fabric (if needed) — type and quantity
-- Interfacing — where and how much
-- Closures: zipper length, button count and size, or other
-- Thread color(s)
-- Any trims, lace, or embellishments
+Write your response using these sections (in Hebrew):
 
-## ✂️ שינויים צעד אחר צעד
-לפני שאת כותבת את הצעדים, עברי על כל שדות ה"פרטי עיצוב מרכזיים" ו"שילוב בדים" בקונספט. כל שינוי שמוזכר שם — כולל שינויי צוואר, כיווצים, תחרה, פתחים — חייב להופיע בצעדים שלך. אל תדלגי על אף אלמנט.
+**Materials section:** For each material list: fabric type, color, quantity in meters (size M default). If additional fabric is needed to match the original dress, flag this clearly — finding an identical match (same shade, weight, sheen) can be difficult. Offer three practical alternatives: where to search for a match, how to use a contrasting fabric intentionally as a design choice, or a creative solution that requires no additional fabric at all. Also include: lining (if needed), interfacing, closures, thread color, trims.
 
-Number each step clearly. Start from preparing the original dress, then each structural change.
+**Step-by-step changes:** Before writing steps, go through all "Key design details" and "Fabric combination" fields in the design concept. Every change mentioned — neckline, lace, openings, cutouts — must appear in the steps. Do not skip any element. Number each step clearly, starting from preparing the original dress.
 
-## 🔧 טכניקות נדרשות
-List specific sewing techniques needed (e.g., French seams, bias binding, princess seams, gathering, smocking, etc.)
+**Techniques required:** List specific sewing techniques needed (French seams, bias binding, princess seams, gathering, smocking, etc.)
 
-## ⭐ רמת קושי
-Rate 1–5 stars and explain: 1 = beginner, 5 = expert couture
+**Difficulty level:** Rate 1–5 stars and explain. 1 = beginner, 5 = expert couture.
 
-## ⏱️ זמן משוער
-Hours for an experienced seamstress (Level 3)
+**Estimated time:** Hours for an experienced seamstress (Level 3).
 
 Write in clear, professional language suitable for a skilled seamstress.
 
-**חשוב: כתוב את כל התשובה בעברית.**
+**Write your entire response in Hebrew.**
 """,
 )

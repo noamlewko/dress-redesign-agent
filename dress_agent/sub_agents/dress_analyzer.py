@@ -21,7 +21,7 @@ Describe:
 
 Be precise and technical. This analysis will be used by a fashion designer to create a redesign.
 
-**חשוב: כתוב את כל התשובה בעברית.**
+**Write your entire response in Hebrew.**
 """,
     output_key="dress_analysis",
 )

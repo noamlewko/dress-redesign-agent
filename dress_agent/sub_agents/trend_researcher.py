@@ -16,11 +16,16 @@ Perform exactly FOUR searches (no more, no less):
 1. "[style] dress trends {current_year} — silhouette neckline cutout"
    Find: dominant silhouettes (A-line, fit-and-flare, column, mermaid, pencil), neckline trends (strapless, halter, cowl, bardot, one-shoulder, deep armhole), structural cutouts and slits. Focus on SHAPE and STRUCTURE only.
 
-2. "lace dress {current_year} — lace trim insert broderie anglaise guipure lace vintage fabric detail evening"
-   This search is specifically about LACE in dresses. Find: where lace appears (hem border, bodice insert, neckline, slit reveal, full lace overlay), what type of lace (guipure, chantilly, broderie anglaise), how it's used as a vintage-modern detail. Also look for other fabric details: ruching, organza overlays, brocade, velvet, satin trim.
+2. "[style] dress fabric and material details {current_year}"
+   Use the exact style word from user preferences as [style]. Find: specific fabric names used in this style, material combinations, surface details and embellishments (lace, embroidery, sequins, etc.), any distinctive texture or trim. Name each fabric specifically — no generic terms.
 
-3. "[style] vintage silhouette revival {current_year} — A-line fit-and-flare empire waist 50s 60s 70s"
-   Find which SILHOUETTES with historical references are being revived: A-line/50s, fit-and-flare/50s-60s, empire waist/70s, drop waist/20s, mermaid/30s. Specific decade references required.
+3. "[style] heritage silhouette {current_year} — decade revival shape structure"
+   Find which SILHOUETTES with historical references are trending for this specific style:
+   - וינטג׳/קלאסי: A-line/50s, fit-and-flare/50s-60s, empire waist/70s, mermaid/30s
+   - בוהמי: prairie/70s, folk/60s, babydoll/60s, tiered maxi/70s
+   - גלאם: disco/70s, power shoulder/80s, column/80s
+   - מינימליסטי: slip dress/90s, column/90s, bias-cut/30s
+   - מודרני: no decade requirement — focus on shape and structure only
 
 4. "Israel fashion dress {current_year} street style designers"
    Find what Israeli women and local designers are actually wearing right now.
@@ -31,18 +36,23 @@ Write a summary with this structure:
 - **מקורות החיפוש** — list the actual URLs you found (e.g. vogue.com/..., haaretz.co.il/..., etc.)
 - **הטרנד המרכזי בשמלות {current_year}** — only from search results, with specific brand names or article references
 - **צווארונים ושרוולים מובילים** — exactly which necklines and sleeve styles are trending
-- **פרטי וינטג׳ שחוזרים ב-{current_year}** — this is critical: which specific construction details have historical/vintage DNA and are appearing NOW? (e.g. "ruching at waist referencing 1950s hourglass, seen in Valentino SS2026", "cowl neck draping revival from 1990s, dominant in satin dresses 2026"). Be specific about the historical reference.
+- **פרטי מורשת שחוזרים ב-{current_year}** — which specific construction details or silhouettes with historical reference are appearing NOW for this style? Be specific about the decade and brand/source reference.
 - **פרטי בנייה ספציפיים** — other structural details from search results
 - **מה קורה בישראל** — only from actual Israeli sources found in search
-- **בדים וחומרים עם DNA וינטג׳** — minimum 5 specific materials: name each one + its vintage era reference (e.g. "guipure lace — Victorian/Edwardian", "silk charmeuse — 1930s bias-cut era", "velvet — 1970s", "broderie anglaise — Victorian", "jacquard — 1950s couture"). If the search didn't return 5, supplement with your fashion knowledge.
+- **בדים וחומרים מתאימים לסגנון** — minimum 5 specific materials relevant to the chosen style. Name each one + its reference (era, aesthetic, or construction quality). Examples by style:
+  - וינטג׳: guipure lace, chantilly lace, velvet, silk charmeuse, broderie anglaise, jacquard
+  - בוהמי: macramé, embroidered cotton, suede, crochet, tiered chiffon, raw linen
+  - גלאם: sequined mesh, metallic lamé, satin, feather trim, crystal-beaded fabric
+  - קלאסי: silk crepe, wool tweed, structured taffeta, organza, jacquard
+  - מינימליסטי: matte jersey, structured cotton, crepe, modal, clean linen
+  Generic terms like "quality fabrics" or "natural materials" are not acceptable — name the actual fabric.
 - **סיילואטים ואורכים** — from search results only
 
 Keep the entire summary under 400 words. Be concrete and specific — no fluff.
-The fabric/material section must list at least 5 specific materials or trims with vintage DNA (e.g. guipure lace, chantilly lace, velvet ribbon, broderie anglaise, jacquard, brocade, silk charmeuse, organza overlay, ruched satin). Generic terms like "quality fabrics" or "natural materials" are not acceptable — name the actual fabric.
 
 If a search returns no useful results, say so in one sentence and move on.
 
-**חשוב: כתוב את כל התשובה בעברית.**
+**Write your entire response in Hebrew.**
 """,
     tools=[google_search],
     output_key="trend_insights",
