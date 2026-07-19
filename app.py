@@ -43,6 +43,7 @@ AGENT_STEPS = [
     ("DesignCreatorAgent",   "✏️  יוצר קונספט עיצוב חדש..."),
     ("DesignValidatorAgent", "🔎 בודק ומתקן את העיצוב..."),
     ("ImageGeneratorAgent",  "🎨 מייצר סקיצה..."),
+    ("SketchValidatorAgent", "🔍 בודק שהסקיצה מתאימה לעיצוב..."),
     ("SeamstressGuideAgent", "🧵 כותב מדריך לתופרת..."),
 ]
 AGENT_NAMES = [name for name, _ in AGENT_STEPS]

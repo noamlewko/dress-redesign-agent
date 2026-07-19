@@ -1,5 +1,5 @@
 """
-Step 6 of 6 — writes detailed Hebrew construction instructions for a professional
+Step 7 of 7 — writes detailed Hebrew construction instructions for a professional
 seamstress to execute every change described in the validated design concept.
 """
 from google.adk.agents import Agent

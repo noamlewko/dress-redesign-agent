@@ -3,7 +3,7 @@ Unit tests for dress agent tools.
 All external API calls are mocked — no real network or API key required.
 """
 import base64
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock, mock_open, patch
 
 
 class MockToolContext:
@@ -155,3 +155,87 @@ class TestGenerateDressSketch:
             )
 
         assert result == "Image generation returned no image"
+
+
+# ── validate_sketch ───────────────────────────────────────────────────────────
+
+
+class TestValidateSketch:
+
+    def _make_context(self):
+        return MockToolContext(state={
+            "sketch_path": "output/sketch_test.png",
+            "final_design_concept": "IMAGE_PROMPT: black velvet dress with deep V neckline, midi length",
+        })
+
+    def _text_response(self, text: str) -> MagicMock:
+        r = MagicMock()
+        r.text = text
+        return r
+
+    def test_returns_error_when_no_sketch_in_state(self):
+        from dress_agent.tools.validate_sketch_tool import validate_sketch
+
+        result = validate_sketch(tool_context=MockToolContext(state={}))
+        assert "No sketch found" in result
+
+    def test_approves_matching_sketch_on_first_attempt(self):
+        from dress_agent.tools.validate_sketch_tool import validate_sketch
+
+        ctx = self._make_context()
+
+        with patch("dress_agent.tools.validate_sketch_tool.Path") as MockPath, \
+             patch("dress_agent.tools.validate_sketch_tool.genai.Client") as MockClient, \
+             patch("builtins.open", mock_open(read_data=b"\x89PNG")):
+            MockPath.return_value.exists.return_value = True
+            MockClient.return_value.models.generate_content.return_value = self._text_response("APPROVED")
+
+            result = validate_sketch(tool_context=ctx)
+
+        assert "approved" in result.lower()
+        assert ctx.state["sketch_validation"] == "Sketch matches design."
+        assert MockClient.return_value.models.generate_content.call_count == 1
+
+    def test_regenerates_on_issues_then_approves(self):
+        from dress_agent.tools.validate_sketch_tool import validate_sketch
+
+        ctx = self._make_context()
+        responses = [
+            self._text_response("Missing: velvet texture not visible"),
+            self._text_response("APPROVED"),
+        ]
+
+        with patch("dress_agent.tools.validate_sketch_tool.Path") as MockPath, \
+             patch("dress_agent.tools.validate_sketch_tool.genai.Client") as MockClient, \
+             patch("dress_agent.tools.validate_sketch_tool.generate_dress_sketch") as mock_regen, \
+             patch("builtins.open", mock_open(read_data=b"\x89PNG")):
+            MockPath.return_value.exists.return_value = True
+            MockClient.return_value.models.generate_content.side_effect = responses
+
+            result = validate_sketch(tool_context=ctx)
+
+        assert "approved" in result.lower()
+        assert "2" in result
+        mock_regen.assert_called_once()
+        enhanced_prompt = mock_regen.call_args[0][0]
+        assert "velvet" in enhanced_prompt
+
+    def test_accepts_after_max_attempts_with_remaining_issues(self):
+        from dress_agent.tools.validate_sketch_tool import validate_sketch
+
+        ctx = self._make_context()
+
+        with patch("dress_agent.tools.validate_sketch_tool.Path") as MockPath, \
+             patch("dress_agent.tools.validate_sketch_tool.genai.Client") as MockClient, \
+             patch("dress_agent.tools.validate_sketch_tool.generate_dress_sketch"), \
+             patch("builtins.open", mock_open(read_data=b"\x89PNG")):
+            MockPath.return_value.exists.return_value = True
+            MockClient.return_value.models.generate_content.return_value = self._text_response(
+                "Missing: velvet texture, wrong neckline"
+            )
+
+            result = validate_sketch(tool_context=ctx)
+
+        assert "3" in result
+        assert "remaining" in result.lower()
+        assert "sketch_validation" in ctx.state
