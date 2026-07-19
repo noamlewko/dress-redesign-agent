@@ -29,6 +29,5 @@ If IMAGE_PROMPT is not present, write one yourself following these rules:
 - For skirt silhouette: never use "voluminous" or "stiff" — write exactly how the hem opens: "A-line skirt that flares outward to a wide open hem", "gathered skirt falling straight to a flat hem". Only use "bubble" or "tulip" if the design specifically calls for a closed tapering hem
 """,
     tools=[generate_dress_sketch],
-    output_key="sketch_path",
     include_contents="none",
 )

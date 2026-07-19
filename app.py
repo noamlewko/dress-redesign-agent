@@ -162,7 +162,7 @@ if run_btn and uploaded_file:
     session_service = InMemorySessionService()
     session = asyncio.run(session_service.create_session(
         app_name="dress_agent",
-        user_id=run_id,
+        user_id="user",
         session_id=run_id,
     ))
     runner = Runner(
@@ -206,7 +206,7 @@ if run_btn and uploaded_file:
             session = asyncio.run(session_service.create_session(
                 app_name="dress_agent",
                 user_id="user",
-                session_id=str(uuid.uuid4()),
+                session_id=str(uuid.uuid4()),  # fresh session_id per retry
             ))
 
         try:
@@ -256,7 +256,7 @@ if run_btn and uploaded_file:
 
     # Read results from session state
     final_session = asyncio.run(session_service.get_session(
-        app_name="dress_agent", user_id=run_id, session_id=run_id
+        app_name="dress_agent", user_id="user", session_id=session.id
     ))
     state = getattr(final_session, "state", {}) if final_session else {}
 
@@ -264,7 +264,6 @@ if run_btn and uploaded_file:
     st.divider()
     st.subheader("התוצאות")
 
-    # Generated sketch
     sketch_path = Path(state.get("sketch_path", sketch_filename))
     if sketch_path.exists():
         st.image(str(sketch_path), caption="הסקיצה החדשה שלך", width=400)
