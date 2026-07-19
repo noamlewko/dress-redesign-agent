@@ -57,7 +57,7 @@ def generate_dress_sketch(design_description: str, tool_context: ToolContext) ->
     )
 
     os.makedirs("output", exist_ok=True)
-    path = "output/new_design.png"
+    path = tool_context.state.get("sketch_path") or "output/new_design.png"
 
     for part in response.candidates[0].content.parts:
         if part.inline_data is not None:

@@ -155,18 +155,15 @@ if run_btn and uploaded_file:
         ],
     )
 
-    # Delete old sketch so we never show a stale image
-    old_sketch = Path("output/new_design.png")
-    if old_sketch.exists():
-        old_sketch.unlink()
-
+    run_id = str(uuid.uuid4())
+    sketch_filename = f"output/sketch_{run_id}.png"
     image_b64 = base64.b64encode(image_bytes).decode("utf-8")
 
     session_service = InMemorySessionService()
     session = asyncio.run(session_service.create_session(
         app_name="dress_agent",
-        user_id="user",
-        session_id=str(uuid.uuid4()),
+        user_id=run_id,
+        session_id=run_id,
     ))
     runner = Runner(
         agent=root_agent,
@@ -193,7 +190,7 @@ if run_btn and uploaded_file:
         "trend_insights": "",
         "design_concept": "",
         "final_design_concept": "",
-        "sketch_path": "",
+        "sketch_path": sketch_filename,
         "seamstress_guide": "",
         "current_date": datetime.now().strftime("%B %Y"),
         "current_year": str(datetime.now().year),
@@ -259,7 +256,7 @@ if run_btn and uploaded_file:
 
     # Read results from session state
     final_session = asyncio.run(session_service.get_session(
-        app_name="dress_agent", user_id="user", session_id=session.id
+        app_name="dress_agent", user_id=run_id, session_id=run_id
     ))
     state = getattr(final_session, "state", {}) if final_session else {}
 
@@ -268,7 +265,7 @@ if run_btn and uploaded_file:
     st.subheader("התוצאות")
 
     # Generated sketch
-    sketch_path = Path("output/new_design.png")
+    sketch_path = Path(state.get("sketch_path", sketch_filename))
     if sketch_path.exists():
         st.image(str(sketch_path), caption="הסקיצה החדשה שלך", width=400)
         with open(sketch_path, "rb") as f:
