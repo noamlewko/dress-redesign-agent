@@ -101,6 +101,7 @@ def validate_seamstress_guide(tool_context: ToolContext) -> str:
 
         if result.upper() == "APPROVED":
             tool_context.state["seamstress_validation"] = "Guide matches design."
+            tool_context.state["seamstress_validation_status"] = "passed"
             return f"Seamstress guide approved after {attempt} attempt(s)."
 
         last_issues = result

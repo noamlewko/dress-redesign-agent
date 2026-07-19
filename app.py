@@ -234,6 +234,8 @@ if run_btn and uploaded_file:
 
             if agent_error:
                 last_error = agent_error
+                if "503" in last_error or "UNAVAILABLE" in last_error:
+                    continue  # retryable — temporary API error
                 break  # non-retryable — agent returned an error
 
             pipeline_ok = True
@@ -249,13 +251,6 @@ if run_btn and uploaded_file:
             st.error("השרת של Gemini עמוס כרגע. נסי שוב בעוד כמה דקות.")
         else:
             st.error(f"שגיאה: {last_error}")
-
-    if pipeline_ok:
-        for name, label in AGENT_STEPS:
-            progress_slots[name].markdown(f"✅ {label.split('...')[0]}")
-        status_text.empty()
-
-    if not pipeline_ok:
         st.stop()
 
     # Read results from session state
@@ -263,6 +258,26 @@ if run_btn and uploaded_file:
         app_name="dress_agent", user_id="user", session_id=session.id
     ))
     state = getattr(final_session, "state", {}) if final_session else {}
+
+    # Check which stages failed and update progress indicators
+    _STAGE_STATUS_KEYS = {
+        "ImageGeneratorAgent": "image_generation_status",
+        "SketchValidatorAgent": "sketch_validation_status",
+        "SeamstressValidatorAgent": "seamstress_validation_status",
+    }
+    failed_agents = {
+        name for name, key in _STAGE_STATUS_KEYS.items()
+        if state.get(key) == "failed"
+    }
+    for name, label in AGENT_STEPS:
+        if name in failed_agents:
+            progress_slots[name].markdown(f"⚠️ {label.split('...')[0]}")
+        else:
+            progress_slots[name].markdown(f"✅ {label.split('...')[0]}")
+    status_text.empty()
+
+    if failed_agents:
+        st.warning("הצנרת הושלמה, אך שלב אחד או יותר לא עבר אימות. הסקיצה או המדריך עלולים להיות לא מושלמים.")
 
     # ── Results ──────────────────────────────────────────────────────────────
     st.divider()

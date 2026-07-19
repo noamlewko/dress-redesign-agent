@@ -58,6 +58,7 @@ class TestGenerateDressSketch:
 
         assert "output/new_design.png" in result
         assert ctx.state["sketch_path"] == "output/new_design.png"
+        assert ctx.state["image_generation_status"] == "passed"
 
     def test_calls_gemini_image_model(self):
         from dress_agent.tools.imagen_tool import generate_dress_sketch
@@ -104,6 +105,7 @@ class TestGenerateDressSketch:
             )
 
         assert result == "Image generation returned no image"
+        assert ctx.state["image_generation_status"] == "failed"
 
 
 # ── validate_sketch ───────────────────────────────────────────────────────────
@@ -143,6 +145,7 @@ class TestValidateSketch:
 
         assert "approved" in result.lower()
         assert ctx.state["sketch_validation"] == "Sketch matches design."
+        assert ctx.state["sketch_validation_status"] == "passed"
         assert MockClient.return_value.models.generate_content.call_count == 1
 
     def test_regenerates_on_issues_then_approves(self):
@@ -160,6 +163,7 @@ class TestValidateSketch:
              patch("builtins.open", mock_open(read_data=b"\x89PNG")):
             MockPath.return_value.exists.return_value = True
             MockClient.return_value.models.generate_content.side_effect = responses
+            mock_regen.return_value = "Sketch saved to output/sketch_test.png"
 
             result = validate_sketch(tool_context=ctx)
 
@@ -169,25 +173,26 @@ class TestValidateSketch:
         enhanced_prompt = mock_regen.call_args[0][0]
         assert "velvet" in enhanced_prompt
 
-    def test_accepts_after_max_attempts_with_remaining_issues(self):
+    def test_fails_after_max_attempts_with_remaining_issues(self):
         from dress_agent.tools.validate_sketch_tool import validate_sketch
 
         ctx = self._make_context()
 
         with patch("dress_agent.tools.validate_sketch_tool.Path") as MockPath, \
              patch("dress_agent.tools.validate_sketch_tool.genai.Client") as MockClient, \
-             patch("dress_agent.tools.validate_sketch_tool.generate_dress_sketch"), \
+             patch("dress_agent.tools.validate_sketch_tool.generate_dress_sketch") as mock_regen, \
              patch("builtins.open", mock_open(read_data=b"\x89PNG")):
             MockPath.return_value.exists.return_value = True
             MockClient.return_value.models.generate_content.return_value = self._text_response(
                 "Missing: velvet texture, wrong neckline"
             )
+            mock_regen.return_value = "Sketch saved to output/sketch_test.png"
 
             result = validate_sketch(tool_context=ctx)
 
         assert "3" in result
         assert "remaining" in result.lower()
-        assert "sketch_validation" in ctx.state
+        assert ctx.state["sketch_validation_status"] == "failed"
 
 
 # ── validate_seamstress_guide ─────────────────────────────────────────────────
@@ -225,6 +230,7 @@ class TestValidateSeamstressGuide:
 
         assert "approved" in result.lower()
         assert ctx.state["seamstress_validation"] == "Guide matches design."
+        assert ctx.state["seamstress_validation_status"] == "passed"
         assert MockClient.return_value.models.generate_content.call_count == 1
 
     def test_fixes_guide_on_issues_then_approves(self):
@@ -246,7 +252,7 @@ class TestValidateSeamstressGuide:
         assert "2" in result
         assert MockClient.return_value.models.generate_content.call_count == 3
 
-    def test_accepts_after_max_attempts_with_remaining_issues(self):
+    def test_fails_after_max_attempts_with_remaining_issues(self):
         from dress_agent.tools.validate_seamstress_tool import validate_seamstress_guide
 
         ctx = self._make_context()
@@ -259,4 +265,4 @@ class TestValidateSeamstressGuide:
 
         assert "3" in result
         assert "remaining" in result.lower()
-        assert "seamstress_validation" in ctx.state
+        assert ctx.state["seamstress_validation_status"] == "failed"

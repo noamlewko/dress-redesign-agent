@@ -8,7 +8,7 @@ from dress_agent.tools.validate_sketch_tool import validate_sketch
 sketch_validator = Agent(
     name="SketchValidatorAgent",
     model="gemini-flash-lite-latest",
-    description="Validates the generated sketch against the design concept and regenerates if elements are missing",
+    description="Validates the generated sketch against the design concept, regenerating up to two times when design elements are missing (three total attempts)",
     instruction="""You are a sketch quality validator.
 
 Call validate_sketch. The tool will:

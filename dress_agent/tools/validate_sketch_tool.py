@@ -67,6 +67,7 @@ def validate_sketch(tool_context: ToolContext) -> str:
 
         if result.upper() == "APPROVED":
             tool_context.state["sketch_validation"] = "Sketch matches design."
+            tool_context.state["sketch_validation_status"] = "passed"
             return f"Sketch approved after {attempt} attempt(s)."
 
         last_issues = result
@@ -77,7 +78,10 @@ def validate_sketch(tool_context: ToolContext) -> str:
                 f"CRITICAL — the following elements were missing in the previous attempt. "
                 f"Each one MUST be clearly visible in this new sketch:\n{last_issues}"
             )
-            generate_dress_sketch(enhanced_prompt, tool_context)
+            regen_result = generate_dress_sketch(enhanced_prompt, tool_context)
+            if "Sketch saved to" not in regen_result:
+                tool_context.state["sketch_validation_status"] = "failed"
+                return f"Sketch regeneration failed: {regen_result}"
             sketch_path = tool_context.state.get("sketch_path", sketch_path)
 
     tool_context.state["sketch_validation_status"] = "failed"

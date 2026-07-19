@@ -57,10 +57,12 @@ def generate_dress_sketch(design_description: str, tool_context: ToolContext) ->
     )
 
     if not response.candidates:
+        tool_context.state["image_generation_status"] = "failed"
         return "Image generation returned no candidates"
 
     content = response.candidates[0].content
     if not content or not content.parts:
+        tool_context.state["image_generation_status"] = "failed"
         return "Image generation returned no content"
 
     os.makedirs("output", exist_ok=True)
@@ -71,6 +73,8 @@ def generate_dress_sketch(design_description: str, tool_context: ToolContext) ->
             with open(path, "wb") as f:
                 f.write(part.inline_data.data)
             tool_context.state["sketch_path"] = path
+            tool_context.state["image_generation_status"] = "passed"
             return f"Sketch saved to {path}"
 
+    tool_context.state["image_generation_status"] = "failed"
     return "Image generation returned no image"
