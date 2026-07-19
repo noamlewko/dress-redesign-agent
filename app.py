@@ -1,5 +1,4 @@
 import asyncio
-import base64
 import os
 import time
 import uuid
@@ -47,8 +46,6 @@ AGENT_STEPS = [
     ("SeamstressGuideAgent",    "🧵 כותב מדריך לתופרת..."),
     ("SeamstressValidatorAgent", "✅ מוודא שהמדריך מתאים לעיצוב..."),
 ]
-AGENT_NAMES = [name for name, _ in AGENT_STEPS]
-
 # ── Hebrew → English translation maps for agent prompts ─────────────────────
 STYLE_MAP = {
     "וינטג׳": "vintage", "מודרני": "modern", "קלאסי": "classic",
@@ -159,7 +156,6 @@ if run_btn and uploaded_file:
 
     run_id = str(uuid.uuid4())
     sketch_filename = f"output/sketch_{run_id}.png"
-    image_b64 = base64.b64encode(image_bytes).decode("utf-8")
 
     session_service = InMemorySessionService()
     session = asyncio.run(session_service.create_session(
@@ -185,8 +181,6 @@ if run_btn and uploaded_file:
     status_text = st.empty()
 
     state_delta = {
-        "uploaded_image_bytes": image_b64,
-        "uploaded_image_mime": mime_type,
         "user_preferences": form_text,
         "dress_analysis": "",
         "trend_insights": "",
@@ -212,6 +206,7 @@ if run_btn and uploaded_file:
             ))
 
         try:
+            agent_error = None
             completed = set()
             for event in runner.run(
                 user_id="user",
@@ -220,7 +215,7 @@ if run_btn and uploaded_file:
                 state_delta=state_delta,
             ):
                 if getattr(event, "error_message", None):
-                    st.error(f"שגיאה ב-{event.author}: {event.error_message}")
+                    agent_error = f"{event.author}: {event.error_message}"
                     break
 
                 author = event.author or ""
@@ -236,6 +231,10 @@ if run_btn and uploaded_file:
                         if idx >= 0 and idx + 1 < len(names):
                             _, next_label = AGENT_STEPS[idx + 1]
                             status_text.markdown(f"**עכשיו:** {next_label}")
+
+            if agent_error:
+                last_error = agent_error
+                break  # non-retryable — agent returned an error
 
             pipeline_ok = True
             break
@@ -255,6 +254,9 @@ if run_btn and uploaded_file:
         for name, label in AGENT_STEPS:
             progress_slots[name].markdown(f"✅ {label.split('...')[0]}")
         status_text.empty()
+
+    if not pipeline_ok:
+        st.stop()
 
     # Read results from session state
     final_session = asyncio.run(session_service.get_session(

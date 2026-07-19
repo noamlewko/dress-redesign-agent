@@ -56,10 +56,17 @@ def generate_dress_sketch(design_description: str, tool_context: ToolContext) ->
         ),
     )
 
+    if not response.candidates:
+        return "Image generation returned no candidates"
+
+    content = response.candidates[0].content
+    if not content or not content.parts:
+        return "Image generation returned no content"
+
     os.makedirs("output", exist_ok=True)
     path = tool_context.state.get("sketch_path") or "output/new_design.png"
 
-    for part in response.candidates[0].content.parts:
+    for part in content.parts:
         if part.inline_data is not None:
             with open(path, "wb") as f:
                 f.write(part.inline_data.data)

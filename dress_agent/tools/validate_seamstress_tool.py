@@ -118,5 +118,6 @@ def validate_seamstress_guide(tool_context: ToolContext) -> str:
             guide = fix_response.text.strip()
             tool_context.state["seamstress_guide"] = guide
 
-    tool_context.state["seamstress_validation"] = f"Max attempts reached. Remaining issues: {last_issues}"
-    return f"Guide accepted after {MAX_ATTEMPTS} attempts. Remaining issues:\n{last_issues}"
+    tool_context.state["seamstress_validation_status"] = "failed"
+    tool_context.state["seamstress_validation"] = f"Validation failed. Remaining issues: {last_issues}"
+    return f"Seamstress guide validation failed after {MAX_ATTEMPTS} attempts. Remaining issues:\n{last_issues}"

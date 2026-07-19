@@ -21,7 +21,7 @@ You have:
 - **Design concept:** {design_concept}
 - **User preferences:** {user_preferences}
 
-Run all 5 checks below. Fix any failure directly in the design concept. If everything passes, output the concept unchanged.
+Run all 6 checks below. Fix any failure directly in the design concept. If everything passes, output the concept unchanged.
 
 ---
 

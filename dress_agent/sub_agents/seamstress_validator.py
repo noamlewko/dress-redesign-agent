@@ -20,6 +20,5 @@ Call validate_seamstress_guide. The tool will:
 After the tool completes, report what happened: either approval or what issues remain.
 """,
     tools=[validate_seamstress_guide],
-    output_key="seamstress_validation",
     include_contents="none",
 )

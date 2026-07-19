@@ -80,5 +80,6 @@ def validate_sketch(tool_context: ToolContext) -> str:
             generate_dress_sketch(enhanced_prompt, tool_context)
             sketch_path = tool_context.state.get("sketch_path", sketch_path)
 
-    tool_context.state["sketch_validation"] = f"Max attempts reached. Remaining issues: {last_issues}"
-    return f"Sketch accepted after {MAX_ATTEMPTS} attempts. Remaining issues:\n{last_issues}"
+    tool_context.state["sketch_validation_status"] = "failed"
+    tool_context.state["sketch_validation"] = f"Validation failed. Remaining issues: {last_issues}"
+    return f"Sketch validation failed after {MAX_ATTEMPTS} attempts. Remaining issues:\n{last_issues}"

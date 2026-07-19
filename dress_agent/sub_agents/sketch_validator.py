@@ -19,6 +19,5 @@ Call validate_sketch. The tool will:
 After the tool completes, report what happened: either that the sketch was approved, or what was fixed.
 """,
     tools=[validate_sketch],
-    output_key="sketch_validation",
     include_contents="none",
 )
