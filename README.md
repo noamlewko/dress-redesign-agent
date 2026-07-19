@@ -70,7 +70,7 @@ streamlit run app.py
 pytest tests/ -v
 ```
 
-14 unit tests covering all 3 tools — no real API calls required (fully mocked).
+11 unit tests covering all 3 tools — no real API calls required (fully mocked).
 
 ## Project structure
 
@@ -87,8 +87,7 @@ dress_agent/
 │   ├── seamstress_guide.py       # Step 7: construction instructions
 │   └── seamstress_validator.py   # Step 8: guide quality validation loop
 └── tools/
-    ├── analyze_image_tool.py     # Gemini Vision tool for dress analysis
-    ├── imagen_tool.py            # Gemini image generation tool
-    └── validate_sketch_tool.py   # Visual sketch validation + regeneration loop
+    ├── imagen_tool.py              # Gemini image generation tool
+    ├── validate_sketch_tool.py     # Visual sketch validation + regeneration loop
     └── validate_seamstress_tool.py # Seamstress guide validation + fix loop
 ```
