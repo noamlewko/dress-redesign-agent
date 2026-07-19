@@ -9,7 +9,7 @@ An AI-powered tool that redesigns a dress from a photo. Upload an image, fill in
 3. **Design Creation** — generates a redesign concept grounded in trend research and user preferences
 4. **Design Validation** — runs 6 structured checks for consistency, feasibility, and completeness before any image is generated
 5. **Sketch Generation** — produces a front + back fashion sketch using Gemini image generation
-6. **Sketch Validation** — visually compares the sketch against the design description using Gemini Vision; regenerates up to 3 times until all elements are visible
+6. **Sketch Validation** — visually compares the sketch against the design description using Gemini Vision; validates the sketch for up to three total attempts and regenerates it up to two times
 7. **Seamstress Guide** — writes detailed professional construction instructions tied to the specific design
 8. **Seamstress Validation** — checks the guide for both design consistency and professional construction quality; auto-fixes issues in a loop up to 3 times
 

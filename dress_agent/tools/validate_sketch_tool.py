@@ -31,6 +31,11 @@ def validate_sketch(tool_context: ToolContext) -> str:
 
     design_concept = tool_context.state.get("final_design_concept", "")
 
+    if not design_concept:
+        tool_context.state["sketch_validation_status"] = "failed"
+        tool_context.state["sketch_validation"] = "Validation failed because no design concept was found."
+        return "No design concept found to validate against."
+
     # Extract IMAGE_PROMPT section from the design concept
     match = re.search(r"IMAGE_PROMPT[:\s]+(.*?)(?=\n[A-Z][A-Z]|\Z)", design_concept, re.DOTALL | re.IGNORECASE)
     image_prompt = match.group(1).strip() if match else design_concept
