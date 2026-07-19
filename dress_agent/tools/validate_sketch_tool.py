@@ -26,6 +26,7 @@ def validate_sketch(tool_context: ToolContext) -> str:
     """
     sketch_path = tool_context.state.get("sketch_path")
     if not sketch_path or not Path(sketch_path).exists():
+        tool_context.state["sketch_validation_status"] = "failed"
         return "No sketch found to validate."
 
     design_concept = tool_context.state.get("final_design_concept", "")

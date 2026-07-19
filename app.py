@@ -198,11 +198,14 @@ if run_btn and uploaded_file:
         if attempt > 0:
             status_text.markdown(f"**השרת עמוס, מנסה שוב ({attempt + 1}/3)...**")
             time.sleep(15)
-            # Fresh session for each retry so pipeline starts clean
+            # Fresh session and fresh sketch filename for each retry
+            retry_id = str(uuid.uuid4())
+            sketch_filename = f"output/sketch_{retry_id}.png"
+            state_delta["sketch_path"] = sketch_filename
             session = asyncio.run(session_service.create_session(
                 app_name="dress_agent",
                 user_id="user",
-                session_id=str(uuid.uuid4()),  # fresh session_id per retry
+                session_id=retry_id,
             ))
 
         try:
@@ -267,7 +270,7 @@ if run_btn and uploaded_file:
     }
     failed_agents = {
         name for name, key in _STAGE_STATUS_KEYS.items()
-        if state.get(key) == "failed"
+        if state.get(key) != "passed"
     }
     for name, label in AGENT_STEPS:
         if name in failed_agents:

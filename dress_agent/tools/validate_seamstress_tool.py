@@ -82,6 +82,7 @@ def validate_seamstress_guide(tool_context: ToolContext) -> str:
     user_preferences = tool_context.state.get("user_preferences", "")
 
     if not guide or not design_concept:
+        tool_context.state["seamstress_validation_status"] = "failed"
         return "Missing guide or design concept — cannot validate."
 
     client = genai.Client()
