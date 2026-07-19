@@ -1,6 +1,7 @@
 import asyncio
 import base64
 import os
+import time
 import uuid
 from datetime import datetime
 from pathlib import Path
@@ -37,13 +38,38 @@ st.markdown("""
 
 # ── Agent labels for progress display ───────────────────────────────────────
 AGENT_STEPS = [
-    ("TrendResearchAgent",  "🔍 מחפש טרנדי אופנה עדכניים..."),
-    ("DressAnalyzerAgent",  "🔬 מנתח את השמלה..."),
-    ("DesignCreatorAgent",  "✏️  יוצר קונספט עיצוב חדש..."),
-    ("ImageGeneratorAgent", "🎨 מייצר סקיצה עם Imagen 4..."),
-    ("SeamstressGuideAgent","🧵 כותב מדריך לתופרת..."),
+    ("TrendResearchAgent",   "🔍 מחפש טרנדי אופנה עדכניים..."),
+    ("DressAnalyzerAgent",   "🔬 מנתח את השמלה..."),
+    ("DesignCreatorAgent",   "✏️  יוצר קונספט עיצוב חדש..."),
+    ("DesignValidatorAgent", "🔎 בודק ומתקן את העיצוב..."),
+    ("ImageGeneratorAgent",  "🎨 מייצר סקיצה..."),
+    ("SeamstressGuideAgent", "🧵 כותב מדריך לתופרת..."),
 ]
 AGENT_NAMES = [name for name, _ in AGENT_STEPS]
+
+# ── Hebrew → English translation maps for agent prompts ─────────────────────
+STYLE_MAP = {
+    "וינטג׳": "vintage", "מודרני": "modern", "קלאסי": "classic",
+    "בוהמי": "boho", "מינימליסטי": "minimalist", "גלאם": "glam",
+}
+OCCASION_MAP = {
+    "יומיומי": "casual", "עבודה": "work", "ערב": "evening", "חתונה": "wedding",
+}
+LENGTH_MAP = {
+    "מידי": "midi", "מיני": "mini", "ברך": "knee-length", "מקסי": "maxi",
+}
+EXPOSURE_MAP = {
+    "מינימלי — מכוסה ואלגנטי": "minimal — covered and elegant",
+    "בינוני — קצת חשיפה": "moderate — some skin",
+    "נועז — אני אוהבת חשוף": "bold — I love skin exposure",
+}
+ZIPPER_MAP = {
+    "לא יודעת": "unknown",
+    "גב — מלמעלה למטה": "back — top to bottom",
+    "צד שמאל / ימין": "side — left or right",
+    "אין רוכסן": "no zipper",
+}
+CHANGE_MAP = {"קל": "light", "בינוני": "moderate", "קיצוני": "radical"}
 
 # ── UI ───────────────────────────────────────────────────────────────────────
 st.title("👗 עיצוב שמלה מחדש")
@@ -102,18 +128,18 @@ if not ready:
 
 # ── Pipeline ─────────────────────────────────────────────────────────────────
 if run_btn and uploaded_file:
-    # Build form text
-    color_line = "שמרי את הצבע המקורי" if color_choice == "שמרי את הצבע המקורי" else f"שני צבע ל: {color_input or 'לא צוין'}"
     change_label = change_level.split(" — ")[0]
 
+    color_line = "keep original color" if color_choice == "שמרי את הצבע המקורי" else f"change color to: {color_input or 'not specified'}"
+
     form_text = (
-        f"Style: {style}\n"
-        f"Change level: {change_label}\n"
+        f"Style: {STYLE_MAP.get(style, style)}\n"
+        f"Change level: {CHANGE_MAP.get(change_label, change_label)}\n"
         f"Age: {age}\n"
-        f"Length: {length}\n"
-        f"Occasion: {occasion}\n"
-        f"Skin exposure preference: {exposure}\n"
-        f"Zipper location: {zipper_location}\n"
+        f"Length: {LENGTH_MAP.get(length, length)}\n"
+        f"Occasion: {OCCASION_MAP.get(occasion, occasion)}\n"
+        f"Skin exposure preference: {EXPOSURE_MAP.get(exposure, exposure)}\n"
+        f"Zipper location: {ZIPPER_MAP.get(zipper_location, zipper_location)}\n"
         f"Color: {color_line}"
     )
 
@@ -159,8 +185,6 @@ if run_btn and uploaded_file:
 
     status_text = st.empty()
 
-    import time
-
     state_delta = {
         "uploaded_image_bytes": image_b64,
         "uploaded_image_mime": mime_type,
@@ -168,6 +192,7 @@ if run_btn and uploaded_file:
         "dress_analysis": "",
         "trend_insights": "",
         "design_concept": "",
+        "final_design_concept": "",
         "sketch_path": "",
         "seamstress_guide": "",
         "current_date": datetime.now().strftime("%B %Y"),
@@ -257,6 +282,6 @@ if run_btn and uploaded_file:
     with tabs[1]:
         st.markdown(state.get("dress_analysis", "—"))
     with tabs[2]:
-        st.markdown(state.get("design_concept", "—"))
+        st.markdown(state.get("final_design_concept", state.get("design_concept", "—")))
     with tabs[3]:
         st.markdown(state.get("seamstress_guide", "—"))

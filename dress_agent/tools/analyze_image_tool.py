@@ -1,34 +1,28 @@
+"""Standalone vision tool for analyzing a dress image via Gemini."""
 import base64
 from google import genai
 from google.genai import types
 from google.adk.tools import ToolContext
 
-# Module-level store — set by app.py before running the pipeline
-_image_bytes: bytes | None = None
-_image_mime: str = "image/jpeg"
-
-
-def set_current_image(image_bytes: bytes, mime_type: str) -> None:
-    global _image_bytes, _image_mime
-    _image_bytes = image_bytes
-    _image_mime = mime_type
-
 
 def analyze_dress_image(tool_context: ToolContext) -> str:
-    """Analyze the uploaded dress image using Gemini Vision."""
-    global _image_bytes, _image_mime
+    """Analyze the uploaded dress image using Gemini Vision.
 
-    # Prefer module-level store; fall back to state
-    if _image_bytes:
-        image_bytes = _image_bytes
-        mime_type = _image_mime
-    else:
-        image_b64 = tool_context.state.get("uploaded_image_bytes")
-        mime_type = tool_context.state.get("uploaded_image_mime", "image/jpeg")
-        if not image_b64:
-            return "שגיאה: לא נמצאה תמונה."
-        image_bytes = base64.b64decode(image_b64)
+    Reads the image from session state (uploaded_image_bytes / uploaded_image_mime),
+    calls Gemini, writes the Hebrew analysis back to state, and returns it.
 
+    Args:
+        tool_context: Injected automatically by ADK — do not pass manually.
+
+    Returns:
+        Hebrew fashion analysis string, or an error message.
+    """
+    image_b64 = tool_context.state.get("uploaded_image_bytes")
+    mime_type = tool_context.state.get("uploaded_image_mime", "image/jpeg")
+    if not image_b64:
+        return "Error: no image found in session state."
+
+    image_bytes = base64.b64decode(image_b64)
     client = genai.Client()
     response = client.models.generate_content(
         model="gemini-flash-lite-latest",

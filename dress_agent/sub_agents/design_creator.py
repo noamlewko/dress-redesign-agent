@@ -1,3 +1,7 @@
+"""
+Step 3 of 6 — generates a structured redesign concept grounded in trend research,
+dress analysis, and user preferences. Outputs to session state as design_concept.
+"""
 from google.adk.agents import Agent
 
 design_creator = Agent(
@@ -20,19 +24,28 @@ This applies to casual, work, evening, wedding — all of it. Even the most unde
 **THREE THINGS YOU MUST DO:**
 
 **1. Pick one HERITAGE SILHOUETTE from the trend research** that fits the chosen style — with a decade reference. Examples by style:
-- וינטג׳/קלאסי: A-line/50s, fit-and-flare/50s-60s, mermaid/30s, empire/70s
-- בוהמי: prairie maxi/70s, tiered folk/60s, babydoll/60s
-- גלאם: disco column/70s, power shoulder/80s
-- מינימליסטי: slip dress/90s, bias-cut column/30s
+- vintage/classic: A-line/50s, fit-and-flare/50s-60s, mermaid/30s, empire/70s
+- boho: prairie maxi/70s, tiered folk/60s, babydoll/60s
+- glam: disco column/70s, power shoulder/80s
+- minimalist: slip dress/90s, bias-cut column/30s
 OR keep the existing silhouette if it already fits the style, and explain why.
 
-**2. Pick one STYLE-APPROPRIATE FABRIC or MATERIAL DETAIL** — this is not optional. Every design must have a specific fabric or material moment. First check the trend research. If not found there, draw from your knowledge:
-- וינטג׳: lace (guipure, chantilly, broderie anglaise), velvet, brocade, satin trim — lace and velvet are always valid
-- בוהמי: macramé, embroidery, crochet, raw linen, tiered chiffon
-- גלאם: sequin mesh, metallic lamé, feather trim, satin
-- קלאסי: silk crepe, tweed, structured taffeta, jacquard
-- מינימליסטי: clean matte fabric, structured cotton, crepe
-A design with no distinctive fabric or material moment has failed requirement 2.
+**2. Pick one STYLE-APPROPRIATE FABRIC or MATERIAL DETAIL** — this is not optional. Every design must have a specific fabric or material moment.
+
+**BEFORE looking at the trend research — read the style and commit to its material identity:**
+- **glam:** the fabric MUST catch light. Sequin mesh, metallic lamé, feather trim, high-shine satin. If the trend research says "Quiet Glamour" or "architectural" — that tells you the SILHOUETTE, not the fabric. Glam in matte fabric has failed. No exceptions.
+- **vintage:** the fabric must feel historical and tactile. Lace (guipure, chantilly, broderie anglaise), velvet, brocade, satin trim. Always valid.
+- **boho:** the fabric must feel handcrafted or layered. Macramé, embroidery, crochet, raw linen, tiered chiffon.
+- **classic:** refined and structured. Silk crepe, tweed, structured taffeta, jacquard.
+- **minimalist:** deliberately plain. Clean matte fabric, structured cotton, crepe. No embellishment.
+
+Then use the trend research to pick WHICH specific version of that fabric (which cut of sequin, which era of lace, which weight of crepe).
+
+**SELF-CHECK before writing output:**
+Re-read the style the user chose. Look at your STYLE FABRIC choice. Ask:
+- Does this fabric visually belong to this style — not just technically fit it?
+- If I showed a photo of this fabric to someone, would they immediately say "[style]"?
+If the answer is no → replace the fabric before continuing.
 
 **3. Add one modern element** to stop it from reading as a costume (geometric cutout, open back, asymmetric neckline, side slit, deep armhole). This is what makes it 2026.
 
@@ -42,18 +55,45 @@ A design with no distinctive fabric or material moment has failed requirement 2.
 
 **Change level — read from user preferences and follow strictly. The value will be "קל", "בינוני", or "קיצוני":**
 
-- **Light (קל):** Work WITH the existing dress. Do NOT replace fabric, do NOT rebuild the bodice, do NOT create a new pattern. Do NOT add any new ruching or gathering — if the dress analysis mentions existing ruching, that is structural to the original pattern and must not be altered or reimagined. Only ADD or SUBTRACT: lace trim at hem, open back cut, side slit, minor neckline adjustment (e.g. slight deepening), or a fabric insert at an existing seam line. Maximum 2 changes. The original dress must still be clearly recognizable.
+- **Light:** Work WITH the existing dress. Do NOT replace fabric, do NOT rebuild the bodice, do NOT create a new pattern. Do NOT add any new ruching or gathering — if the dress analysis mentions existing ruching, that is structural to the original pattern and must not be altered or reimagined. Only ADD or SUBTRACT: lace trim at hem, open back cut, side slit, minor neckline adjustment (e.g. slight deepening), or a fabric insert at an existing seam line. Maximum 2 changes. The original dress must still be clearly recognizable.
 
-- **Moderate (בינוני):** Can modify the silhouette modestly (e.g. add volume to the skirt, convert waistline). Can add fabric inserts at existing seam lines (waist, hip). Can open or reshape the back significantly. Cannot completely rebuild the bodice from scratch. Cannot replace the main fabric — additions only.
+- **Moderate:** Can modify the silhouette modestly (e.g. add volume to the skirt, convert waistline). Can add fabric inserts at existing seam lines (waist, hip). Can open or reshape the back significantly. Cannot completely rebuild the bodice from scratch. Cannot replace the main fabric — additions only.
 
-- **Radical (קיצוני):** Full redesign is allowed. New silhouette, new fabric, new bodice pattern — all permitted. Use the original dress as starting point only.
+- **Radical:** Major structural reconstruction — but the original dress is still the physical base. You may: completely change the silhouette (open seams, restructure the bodice), add large sections of new fabric, change the neckline entirely, rework the waistline dramatically. You may NOT: replace the entire original fabric, build a new dress from scratch, or propose changes that require discarding the garment. The original dress must still be the foundation of what is being worn.
 
 **Always apply:**
-- Fabric feasibility: before proposing any modification, read the original fabric from the dress analysis and reason about its physical properties:
-  - Does this fabric hold structure or flow? Structured/woven fabrics resist gathering and draping on an existing cut bodice. Fluid fabrics allow it.
-  - Is this fabric forgiving of mistakes? Sheer or delicate fabrics (lace, organza, silk) show needle holes and require clean seam finishing.
+
+- **Fabric-style compatibility check — do this BEFORE designing:**
+  Read the original fabric from dress analysis. Ask: can this fabric physically support the style's material requirement?
+  - Cotton + boho = ✓ embroidery and macramé attach well to cotton
+  - Cotton + vintage = ✓ lace overlay, satin trim at seams
+  - Cotton + minimalist = ✓ structured cotton IS the material
+  - Cotton + classic = ✓ with quality trim additions
+  - Cotton + glam = ⚠ cotton cannot hold sequins full-body → go to fabric combination logic
+  - Chiffon + rigid structured shapes = ✗ too fluid for sharp architecture
+  If incompatible: apply fabric combination logic before writing the design.
+
+- **Fabric combination logic — when original fabric cannot support the style alone:**
+  A smart combination can bridge the gap, but ONLY if all four are true:
+  1. New fabric meets at an existing seam line (waist, shoulder, hip) or a deliberate new design line
+  2. The contrast is strong enough to read as intentional design, not a patch
+  3. Fabric weights are compatible — heavy new fabric will pull light original out of shape
+  4. The new fabric covers enough of the dress to feel complete, not token
+  Good examples: cotton skirt + sequined bodice / cotton base + full lace overlay / cotton bodice + chiffon tiered skirt
+  If no combination can achieve the style authentically → state the limitation honestly and adapt the design to what the original fabric CAN do well.
+
+- **FEASIBILITY CHECK — answer all before finalizing:**
+  □ Can this dress still be worn after all changes? (structural integrity)
+  □ Does the bodice still connect to the skirt?
+  □ Cutouts: only ONE side at a time — not both sides simultaneously
+  □ Is the original fabric still the majority of what is worn?
+  □ Could a seamstress do this without discarding the original garment?
+  If any answer is NO → revise until all are YES.
+
+- Fabric feasibility: read the original fabric from dress analysis and reason about its physical properties:
+  - Does this fabric hold structure or flow?
   - Does this modification require cutting into the existing fabric, or only adding to it?
-  Only propose modifications that are physically achievable on THIS specific fabric. If a modification would require rebuilding what the fabric cannot support, replace it with something feasible.
+  Only propose modifications physically achievable on THIS specific fabric.
 - Boning: if the original dress is not a corset, don't recommend adding real boning. Suggest topstitched seam lines instead.
 - Seams: every added fabric has a visible seam. It must fall at a design line or be intentionally contrasting.
 - Midi length: always change something on the upper half (neckline or sleeves). Midi + unchanged top = matronly.
@@ -87,7 +127,25 @@ The same silhouette can work for evening and wedding — occasion amplifies the 
 **⚠️ STYLE FABRIC/MATERIAL:** [name + what it adds + why it fits this style]
 **MODERN ELEMENT:** [name it]
 
-**IMAGE_PROMPT:** [English only. Only describe the CHANGES — do not describe parts that are unchanged. For unchanged parts, state them in one word: "sleeveless", "boat neck", "midi length" — nothing more. For changed parts: state exactly WHERE, what it looks like, and how it sits relative to surrounding fabric. Under 110 words. No photography terms, no lighting.]
+**IMAGE_PROMPT:** [English only. Only describe the CHANGES — do not describe parts that are unchanged. For unchanged parts, state them in one word: "sleeveless", "boat neck", "midi length" — nothing more. For changed parts: state exactly WHERE, what it looks like, and how it sits relative to surrounding fabric.
+
+**Fabric description rules — both are required:**
+1. Name the fabric WITH its color first: "black guipure lace", "ivory sequined mesh", "red silk charmeuse". Never write a fabric name without its color.
+2. Describe how it behaves visually: does it drape and flow? catch light softly as it moves? sit stiff and structured? cling to the body? — write this in the same phrase. E.g. "black metallic lamé skirt that drapes and catches light softly with each movement", "guipure lace overlay that sits flat and structured against the bodice", "sequined mesh panels that shimmer as the fabric moves".
+**Never write fabric names alone — always with their visual behavior. Never write "panels" without saying how those panels fall or sit.**
+
+**Lace transparency rule:** Whenever lace appears, state explicitly whether it is sheer or opaque:
+- Sheer (skin visible through lace): write "sheer lace revealing skin underneath"
+- Opaque (lace over fabric, skin not visible): write "lace appliqué over opaque fabric, fully lined"
+
+Under 110 words. No photography terms, no lighting. No sewing/construction terms — IMAGE_PROMPT is purely visual. Never write: raw edges, stay-stitch, interfacing, seam allowance, grain, facing, bias binding, French seam, or any construction term. Describe only what the eye sees. Never use "voluminous" — instead write exactly how the hem opens: "A-line skirt that flares outward to a wide open hem."
+
+**IMAGE_PROMPT self-check — answer before finalizing:**
+1. Can someone draw the front view from this description alone, with exact placement of every element?
+2. Can someone draw the back view from this description alone?
+3. Does every named element (strap, cutout, slit, fabric panel) have an exact location — left side / right side / center back / at the waist? If "slit" → which side? If "strap" → where does it sit?
+4. Does every element in IMAGE_PROMPT also appear in Key design details?
+If any answer is no → fix IMAGE_PROMPT and Key design details before outputting.]
 
 **Neckline:** [exact change or "unchanged"]
 **Sleeves:** [exact change or "unchanged"]

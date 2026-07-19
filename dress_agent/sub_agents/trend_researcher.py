@@ -1,3 +1,7 @@
+"""
+Step 1 of 6 — searches Google for current fashion trends matching the user's
+chosen style and outputs a structured Hebrew summary to session state.
+"""
 from google.adk.agents import Agent
 from google.adk.tools import google_search
 
@@ -21,11 +25,11 @@ Perform exactly FOUR searches (no more, no less):
 
 3. "[style] heritage silhouette {current_year} — decade revival shape structure"
    Find which SILHOUETTES with historical references are trending for this specific style:
-   - וינטג׳/קלאסי: A-line/50s, fit-and-flare/50s-60s, empire waist/70s, mermaid/30s
-   - בוהמי: prairie/70s, folk/60s, babydoll/60s, tiered maxi/70s
-   - גלאם: disco/70s, power shoulder/80s, column/80s
-   - מינימליסטי: slip dress/90s, column/90s, bias-cut/30s
-   - מודרני: no decade requirement — focus on shape and structure only
+   - vintage/classic: A-line/50s, fit-and-flare/50s-60s, empire waist/70s, mermaid/30s
+   - boho: prairie/70s, folk/60s, babydoll/60s, tiered maxi/70s
+   - glam: disco/70s, power shoulder/80s, column/80s
+   - minimalist: slip dress/90s, column/90s, bias-cut/30s
+   - modern: no decade requirement — focus on shape and structure only
 
 4. "Israel fashion dress {current_year} street style designers"
    Find what Israeli women and local designers are actually wearing right now.
@@ -40,11 +44,11 @@ Write a summary with this structure:
 - **פרטי בנייה ספציפיים** — other structural details from search results
 - **מה קורה בישראל** — only from actual Israeli sources found in search
 - **בדים וחומרים מתאימים לסגנון** — minimum 5 specific materials relevant to the chosen style. Name each one + its reference (era, aesthetic, or construction quality). Examples by style:
-  - וינטג׳: guipure lace, chantilly lace, velvet, silk charmeuse, broderie anglaise, jacquard
-  - בוהמי: macramé, embroidered cotton, suede, crochet, tiered chiffon, raw linen
-  - גלאם: sequined mesh, metallic lamé, satin, feather trim, crystal-beaded fabric
-  - קלאסי: silk crepe, wool tweed, structured taffeta, organza, jacquard
-  - מינימליסטי: matte jersey, structured cotton, crepe, modal, clean linen
+  - vintage: guipure lace, chantilly lace, velvet, silk charmeuse, broderie anglaise, jacquard
+  - boho: macramé, embroidered cotton, suede, crochet, tiered chiffon, raw linen
+  - glam: sequined mesh, metallic lamé, satin, feather trim, crystal-beaded fabric
+  - classic: silk crepe, wool tweed, structured taffeta, organza, jacquard
+  - minimalist: matte jersey, structured cotton, crepe, modal, clean linen
   Generic terms like "quality fabrics" or "natural materials" are not acceptable — name the actual fabric.
 - **סיילואטים ואורכים** — from search results only
 

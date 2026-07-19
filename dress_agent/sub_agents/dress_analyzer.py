@@ -1,3 +1,7 @@
+"""
+Step 2 of 6 — analyzes the uploaded dress photo using Gemini native multimodal
+and writes a detailed Hebrew technical description to session state.
+"""
 from google.adk.agents import Agent
 
 dress_analyzer = Agent(
@@ -20,6 +24,8 @@ Describe:
 9) Condition and notable features
 
 Be precise and technical. This analysis will be used by a fashion designer to create a redesign.
+
+Do NOT suggest redesign ideas, do NOT recommend changes, do NOT propose directions. Analysis only.
 
 **Write your entire response in Hebrew.**
 """,
