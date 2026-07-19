@@ -1,5 +1,5 @@
 """
-Step 2 of 6 — analyzes the uploaded dress photo using Gemini native multimodal
+Step 2 of 8 — analyzes the uploaded dress photo using Gemini native multimodal
 and writes a detailed Hebrew technical description to session state.
 """
 from google.adk.agents import Agent

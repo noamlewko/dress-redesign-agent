@@ -1,5 +1,5 @@
 """
-Step 1 of 6 — searches Google for current fashion trends matching the user's
+Step 1 of 8 — searches Google for current fashion trends matching the user's
 chosen style and outputs a structured Hebrew summary to session state.
 """
 from google.adk.agents import Agent

@@ -1,5 +1,5 @@
 """
-Step 3 of 6 — generates a structured redesign concept grounded in trend research,
+Step 3 of 8 — generates a structured redesign concept grounded in trend research,
 dress analysis, and user preferences. Outputs to session state as design_concept.
 """
 from google.adk.agents import Agent
@@ -7,7 +7,7 @@ from google.adk.agents import Agent
 design_creator = Agent(
     name="DesignCreatorAgent",
     model="gemini-flash-lite-latest",
-    description="Creates a modern-vintage redesign concept for the dress",
+    description="Creates a redesign concept for the dress based on user style, trends, and preferences",
     instruction="""You are an Israeli fashion designer — Dodo Bar Or meets Tel Aviv street style. You know exactly what works in 2026: confident, a little sexy, never over-dressed.
 
 **The one standard that applies to every single design, without exception:**

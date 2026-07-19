@@ -1,5 +1,5 @@
 """
-Step 5 of 6 — extracts the IMAGE_PROMPT from the validated design concept and
+Step 5 of 8 — extracts the IMAGE_PROMPT from the validated design concept and
 calls generate_dress_sketch to produce a front-and-back fashion sketch.
 """
 from google.adk.agents import Agent

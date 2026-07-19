@@ -1,5 +1,5 @@
 """
-Step 6 of 7 — visually validates the generated sketch against the design concept
+Step 6 of 8 — visually validates the generated sketch against the design concept
 and regenerates it once if critical elements are missing.
 """
 from google.adk.agents import Agent

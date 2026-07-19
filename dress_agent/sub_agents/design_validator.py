@@ -1,5 +1,5 @@
 """
-Step 4 of 6 — validates the design concept across 6 checks (change level,
+Step 4 of 8 — validates the design concept across 6 checks (change level,
 structural feasibility, sewing achievability, form compliance, image-prompt
 consistency, and cross-section coherence) and outputs the corrected concept
 to session state as final_design_concept.

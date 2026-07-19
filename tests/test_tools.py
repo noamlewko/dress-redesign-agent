@@ -239,3 +239,75 @@ class TestValidateSketch:
         assert "3" in result
         assert "remaining" in result.lower()
         assert "sketch_validation" in ctx.state
+
+
+# ── validate_seamstress_guide ─────────────────────────────────────────────────
+
+
+class TestValidateSeamstressGuide:
+
+    def _make_context(self):
+        return MockToolContext(state={
+            "seamstress_guide": "1. הוסיפי תחרה שחורה על הבד. 2. סגרי עם רוכסן צדדי.",
+            "final_design_concept": "IMAGE_PROMPT: black lace overlay, side zipper, midi length.",
+            "user_preferences": "Length: midi\nStyle: classic",
+        })
+
+    def _text_response(self, text: str) -> MagicMock:
+        r = MagicMock()
+        r.text = text
+        return r
+
+    def test_returns_error_when_guide_or_concept_missing(self):
+        from dress_agent.tools.validate_seamstress_tool import validate_seamstress_guide
+
+        result = validate_seamstress_guide(tool_context=MockToolContext(state={}))
+        assert "Missing" in result
+
+    def test_approves_matching_guide_on_first_attempt(self):
+        from dress_agent.tools.validate_seamstress_tool import validate_seamstress_guide
+
+        ctx = self._make_context()
+
+        with patch("dress_agent.tools.validate_seamstress_tool.genai.Client") as MockClient:
+            MockClient.return_value.models.generate_content.return_value = self._text_response("APPROVED")
+
+            result = validate_seamstress_guide(tool_context=ctx)
+
+        assert "approved" in result.lower()
+        assert ctx.state["seamstress_validation"] == "Guide matches design."
+        assert MockClient.return_value.models.generate_content.call_count == 1
+
+    def test_fixes_guide_on_issues_then_approves(self):
+        from dress_agent.tools.validate_seamstress_tool import validate_seamstress_guide
+
+        ctx = self._make_context()
+        responses = [
+            self._text_response("Missing: midi length not mentioned in the guide."),
+            self._text_response("Fixed guide with midi length."),  # fix call
+            self._text_response("APPROVED"),
+        ]
+
+        with patch("dress_agent.tools.validate_seamstress_tool.genai.Client") as MockClient:
+            MockClient.return_value.models.generate_content.side_effect = responses
+
+            result = validate_seamstress_guide(tool_context=ctx)
+
+        assert "approved" in result.lower()
+        assert "2" in result
+        assert MockClient.return_value.models.generate_content.call_count == 3
+
+    def test_accepts_after_max_attempts_with_remaining_issues(self):
+        from dress_agent.tools.validate_seamstress_tool import validate_seamstress_guide
+
+        ctx = self._make_context()
+        issue = self._text_response("Guide contradicts design on length.")
+
+        with patch("dress_agent.tools.validate_seamstress_tool.genai.Client") as MockClient:
+            MockClient.return_value.models.generate_content.return_value = issue
+
+            result = validate_seamstress_guide(tool_context=ctx)
+
+        assert "3" in result
+        assert "remaining" in result.lower()
+        assert "seamstress_validation" in ctx.state

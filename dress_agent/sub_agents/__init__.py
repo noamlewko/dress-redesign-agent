@@ -5,3 +5,4 @@ from .design_validator import design_validator
 from .image_generator import image_generator
 from .sketch_validator import sketch_validator
 from .seamstress_guide import seamstress_guide
+from .seamstress_validator import seamstress_validator

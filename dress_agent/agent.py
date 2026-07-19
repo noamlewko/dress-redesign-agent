@@ -1,11 +1,11 @@
 """
-Root agent: a 7-step Workflow pipeline that takes a dress photo + user
-preferences and produces a redesign sketch and seamstress construction guide.
+Root agent: an 8-step SequentialAgent pipeline that takes a dress photo + user
+preferences and produces a validated redesign sketch and seamstress construction guide.
 
 Pipeline order:
     TrendResearchAgent → DressAnalyzerAgent → DesignCreatorAgent
     → DesignValidatorAgent → ImageGeneratorAgent → SketchValidatorAgent
-    → SeamstressGuideAgent
+    → SeamstressGuideAgent → SeamstressValidatorAgent
 """
 from google.adk.agents import SequentialAgent
 from .sub_agents import (
@@ -16,6 +16,7 @@ from .sub_agents import (
     image_generator,
     sketch_validator,
     seamstress_guide,
+    seamstress_validator,
 )
 
 root_agent = SequentialAgent(
@@ -24,7 +25,7 @@ root_agent = SequentialAgent(
         "A complete dress redesign pipeline: researches current trends, "
         "analyzes your dress, creates a new design concept, validates and corrects it, "
         "generates a visual sketch, validates the sketch visually, "
-        "and provides detailed seamstress instructions."
+        "writes seamstress instructions, and validates them against the design."
     ),
     sub_agents=[
         trend_researcher,
@@ -34,5 +35,6 @@ root_agent = SequentialAgent(
         image_generator,
         sketch_validator,
         seamstress_guide,
+        seamstress_validator,
     ],
 )
